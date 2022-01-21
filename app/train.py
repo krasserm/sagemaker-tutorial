@@ -13,7 +13,7 @@ class CLI(LightningCLI):
         self.sm_training_data_dir = os.environ.get("SM_CHANNEL_TRAINING")
         self.sm_output_data_dir = os.environ.get("SM_OUTPUT_DATA_DIR")
         self.sm_model_dir = os.environ.get("SM_MODEL_DIR")
-        self.sm_hosts = os.environ.get("SM_HOSTS", "['localhost']")
+        self.sm_hosts = os.environ.get("SM_HOSTS", "[\"localhost\"]")
         self.num_nodes = len(json.loads(self.sm_hosts))
         super().__init__(*args, **kwargs)
 
