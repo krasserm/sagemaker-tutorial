@@ -20,35 +20,7 @@ and provides instructions for running the documented examples.
 
 ## Training
 
-### Without SageMaker
-
-Calling `app/train.py` directly without using SageMaker requires an activated `sagemaker-tutorial` conda environment.
-
-```bash
-conda env create -f environment.yml
-conda activate sagemaker-tutorial
-```
-
-Training for 5 epochs on all local GPUs can be started with:
-
-```bash
-PYTHONPATH=. python app/train.py \
-  --data=CIFAR10DataModule \
-  --data.data_dir=.cache \
-  --optimizer=Adam \
-  --optimizer.lr=0.001 \
-  --trainer.accelerator=gpu \
-  --trainer.devices=-1 \
-  --trainer.max_epochs=5 \
-  --trainer.weights_save_path=logs/checkpoints \
-  --logger.save_dir=logs/tensorboard \
-  --logger.name=tutorial
-```
-
-### With SageMaker in local mode
-
-If you already did a training run [without SageMaker](#without-sagemaker), CIFAR-10 data have already been downloaded
-to the local `.cache` directory, otherwise, download them with:
+Download CIFAR-10 data to `.cache` directory with:
 
 ```bash
 mkdir -p .cache
@@ -60,6 +32,8 @@ Build the `sagemaker-tutorial` Docker image:
 ```bash
 ./docker/build-image.sh
 ```
+
+### With SageMaker in local mode
 
 Local single-node i.e. single-container training for 5 epochs using all available GPUs can then be started with:
 
@@ -139,4 +113,55 @@ Training progress can be monitored during training with:
 
 ```bash
 tensorboard --logdir ${S3_PATH}/tensorboard
+```
+
+### Without SageMaker in a conda environment
+
+Calling `app/train.py` directly without using SageMaker requires an activated `sagemaker-tutorial` conda environment.
+
+```bash
+conda env create -f environment.yml
+conda activate sagemaker-tutorial
+```
+
+Training for 5 epochs on all local GPUs can be started with:
+
+```bash
+PYTHONPATH=. python app/train.py \
+  --data=CIFAR10DataModule \
+  --data.data_dir=.cache \
+  --optimizer=Adam \
+  --optimizer.lr=0.001 \
+  --trainer.accelerator=gpu \
+  --trainer.devices=-1 \
+  --trainer.max_epochs=5 \
+  --trainer.weights_save_path=logs/checkpoints \
+  --logger.save_dir=logs/tensorboard \
+  --logger.name=tutorial
+```
+
+### Without SageMaker in a Docker container 
+
+To bypass the SageMaker training toolkit, the container is run with command `python app/train.py ...` directly, instead
+of `train` (as SageMaker does).
+
+```bash
+docker run \
+  -v $(pwd)/.cache:/opt/ml/code/.cache \
+  -v $(pwd)/logs:/opt/ml/code/logs \
+  --rm \
+  --name app \
+  --runtime=nvidia \
+  sagemaker-tutorial:latest \
+  python app/train.py \
+    --data=CIFAR10DataModule \
+    --data.data_dir=.cache \
+    --optimizer=Adam \
+    --optimizer.lr=0.001 \
+    --trainer.accelerator=gpu \
+    --trainer.devices=-1 \
+    --trainer.max_epochs=1 \
+    --trainer.weights_save_path=logs/checkpoints \
+    --logger.save_dir=logs/tensorboard \
+    --logger.name=tutorial
 ```

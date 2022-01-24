@@ -3,4 +3,4 @@
 conda activate sagemaker-tutorial
 export PYTHONPATH=.
 
-$1
+$@
