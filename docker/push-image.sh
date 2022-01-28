@@ -19,7 +19,7 @@ aws ecr get-login-password --region ${REGION} | \
 docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
 
 echo 'Build Docker image'
-docker/build-image.sh
+docker/build-image.sh $@
 
 echo 'Push Docker image'
 docker tag ${IMAGE_NAME} ${IMAGE_URI}
