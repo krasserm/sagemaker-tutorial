@@ -35,8 +35,11 @@ RUN conda env create -f $CODEPATH/environment.yml
 # Copy application files.
 COPY app $CODEPATH/app/
 
-# Expose training script to SageMaker.
-ENV SAGEMAKER_PROGRAM app/train_distributed.py
+# Expose training script to SageMaker and support overriding
+# at build-time. This can either be app/train_multi_node.py
+# (default) or app/train_multi_node_torchrun.py.
+ARG SAGEMAKER_PROGRAM=app/train_multi_node.py
+ENV SAGEMAKER_PROGRAM=${SAGEMAKER_PROGRAM}
 
 # Make all local GPUs visible
 ENV NVIDIA_VISIBLE_DEVICES="all"

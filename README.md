@@ -33,6 +33,14 @@ Build the `sagemaker-tutorial` Docker image:
 ./docker/build-image.sh
 ```
 
+If you'd rather like to use the [torchrun based training script wrapper](app/train_multi_node_torchrun.py) 
+(`app/train_multi_node_torchrun.py`) instead of the [default one](app/train_multi_node.py)
+(`app/train_multi_node.py`) build the Docker image with:
+
+```bash
+./docker/build-image.sh --build-arg SAGEMAKER_PROGRAM=-app/train_multi_node_torchrun.py
+```
+
 ### With SageMaker in local mode
 
 Local single-node i.e. single-container training for 5 epochs using all available GPUs can then be started with:
