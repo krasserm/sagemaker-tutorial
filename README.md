@@ -139,7 +139,7 @@ PYTHONPATH=. python app/train.py \
   --data=CIFAR10DataModule \
   --data.data_dir=.cache \
   --optimizer=Adam \
-  --optimizer.lr=0.001 \
+  --optimizer.lr=1e-3 \
   --trainer.accelerator=gpu \
   --trainer.devices=-1 \
   --trainer.max_epochs=5 \
@@ -165,7 +165,7 @@ docker run \
     --data=CIFAR10DataModule \
     --data.data_dir=.cache \
     --optimizer=Adam \
-    --optimizer.lr=0.001 \
+    --optimizer.lr=1e-3 \
     --trainer.accelerator=gpu \
     --trainer.devices=-1 \
     --trainer.max_epochs=1 \

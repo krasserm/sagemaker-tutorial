@@ -6,12 +6,12 @@ from sagemaker.estimator import Estimator
 
 DEFAULT_HYPERPARAMS = {
     "data": "CIFAR10DataModule",
-    "data.batch_size": "32",
+    "data.batch_size": 32,
     "optimizer": "Adam",
-    "optimizer.lr": "0.001",
+    "optimizer.lr": 1e-3,
     "trainer.accelerator": "gpu",
-    "trainer.devices": "-1",
-    "trainer.max_epochs": "5",
+    "trainer.devices": -1,
+    "trainer.max_epochs": 5,
     "logger.name": "tutorial"
 }
 
