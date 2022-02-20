@@ -1,6 +1,6 @@
 import json
 import os
-import shutil
+import torch
 
 from pytorch_lightning.loggers import TensorBoardLogger
 from pytorch_lightning.utilities.cli import LightningCLI, LightningArgumentParser
@@ -52,14 +52,20 @@ def main():
     # Instantiate trainer, model and data module.
     cli = CLI(model_class=ResNet18, parser_kwargs=trainer_defaults, save_config_overwrite=True, run=False)
 
-    # Run training and validation
+    # Run training and validation.
     cli.trainer.fit(cli.model, cli.datamodule)
 
     if cli.trainer.is_global_zero and cli.sm_model_dir:
-        # Copy the best checkpoint to SageMaker model directory
-        source = cli.trainer.checkpoint_callback.best_model_path
-        target = os.path.join(cli.sm_model_dir, "checkpoint.pt")
-        shutil.copyfile(source, target)
+        # Load best checkpoint.
+        ckpt_path = cli.trainer.checkpoint_callback.best_model_path
+        ckpt = ResNet18.load_from_checkpoint(ckpt_path)
+
+        # Write best model to SageMaker model directory.
+        model_path = os.path.join(cli.sm_model_dir, "model.pt")
+        torch.save(ckpt.model.state_dict(), model_path)
+
+        # Checkpoint not needed (yet), delete it.
+        os.remove(ckpt_path)
 
 
 if __name__ == "__main__":
