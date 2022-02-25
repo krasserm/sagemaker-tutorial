@@ -1,6 +1,10 @@
 # SageMaker tutorial
 
-This projects contains the source code for article [Multi-node, multi-GPU training with PyTorch Lightning on SageMaker](https://krasserm.github.io/2022/01/21/sagemaker-multi-node/) 
+This repository contains the source code for articles 
+
+- [Multi-node, multi-GPU training with PyTorch Lightning on SageMaker](https://krasserm.github.io/2022/01/21/sagemaker-multi-node/) and 
+- Fault-tolerant spot instance training with PyTorch Lightning on SageMaker (coming soon)
+
 and provides instructions for running the documented examples.
 
 ## Prerequisites
@@ -20,7 +24,7 @@ and provides instructions for running the documented examples.
 
 ## Training
 
-Download CIFAR-10 data to `.cache` directory with:
+Download CIFAR-10 data to local `.cache` directory with:
 
 ```bash
 mkdir -p .cache
@@ -85,11 +89,12 @@ The following commands use the environment variable `SAGEMAKER_ROLE` to refer to
 
 ```bash
 export SAGEMAKER=ROLE=arn:aws:iam::<account-id>:role/<role-name>
-export S3_PATH=s3://<my-bucket>
+export S3_PATH=s3://<my-bucket>/<my-prefix>
 ```
 
-Replace `<account-id>`, `<role-name>` and `<my-bucket>` with values appropriate for your AWS environment. Before training 
-can be started, the `sagemaker-tutorial` Docker image must be pushed to the AWS Elastic Container Registry with:
+Replace `<account-id>`, `<role-name>`, `<my-bucket>` and `<my-prefix>` with values appropriate for your AWS environment. 
+Before training can be started, the `sagemaker-tutorial` Docker image must be pushed to the AWS Elastic Container 
+Registry with:
 
 ```bash
 ./docker/push-image.sh
@@ -102,22 +107,31 @@ dataset to S3:
 ./upload-cifar-10.sh ${S3_PATH}/datasets/cifar-10
 ```
 
-Multi-node, multi-GPU training for 5 epochs on 2 `ml.g4dn.12xlarge` instances (4 GPUs each) can be started with:
+Multi-node, multi-GPU training for 5 epochs on 2 `ml.g4dn.12xlarge` spot instances (4 GPUs each) can be started with:
 
 ```bash
-python run_sagemaker.py \
+JOB_NAME="sagemaker-tutorial-$(date '+%Y-%m-%d-%H-%M-%S')"; python run_sagemaker.py \
+  --job_name=${JOB_NAME} \
   --image_uri=$(docker/image-uri.sh) \
   --role=${SAGEMAKER_ROLE} \
   --instance_type=ml.g4dn.12xlarge \
   --instance_count=2 \
   --input_path=${S3_PATH}/datasets/cifar-10 \
   --output_path=${S3_PATH}/output \
+  --checkpoint_path=${S3_PATH}/output/${JOB_NAME}/checkpoints \
+  --spot_instances=true \
+  --max_retry=3 \
+  --max_wait=14400 \
+  --max_run=3600 \
   --hyperparams \
-    logger.save_dir=${S3_PATH}/tensorboard \
-    logger.flush_secs=5
+    trainer.max_epochs=5 \
+    logger.save_dir=${S3_PATH}/output/${JOB_NAME}/logger-output \
+    logger.flush_secs=10
 ```
 
-Training progress can be monitored during training with:
+`--max_run=3600` limits the maximum training time to 1 hour and `--max_wait=14400` limits the maximum waiting time for 
+spot instances to 4 hours. Upon spot instance failures, training is restarted at most 3 times (`--max_retry=3`). Training
+progress can be monitored during training with:
 
 ```bash
 tensorboard --logdir ${S3_PATH}/tensorboard
