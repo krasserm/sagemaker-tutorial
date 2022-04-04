@@ -1,6 +1,6 @@
 # SageMaker tutorial
 
-This projects contains the source code for article [Multi-node, multi-GPU training with PyTorch Lightning on SageMaker](https://krasserm.github.io/2022/01/21/sagemaker-multi-node/) 
+This projects contains the source code for article [Using AWS SageMaker with minimal dependencies, part 1 - Distributed model training with PyTorch Lightning](https://krasserm.github.io/2022/01/21/sagemaker-multi-node/) 
 and provides instructions for running the documented examples.
 
 ## Prerequisites
