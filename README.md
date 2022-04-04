@@ -2,8 +2,8 @@
 
 This repository contains the source code for articles 
 
-- [Multi-node, multi-GPU training with PyTorch Lightning on SageMaker](https://krasserm.github.io/2022/01/21/sagemaker-multi-node/) and 
-- [Fault-tolerant spot instance training with PyTorch Lightning on SageMaker](https://krasserm.github.io/2022/02/26/sagemaker-fault-tolerance/)
+- [Using AWS SageMaker with minimal dependencies, part 1 - Distributed model training with PyTorch Lightning](https://krasserm.github.io/2022/01/21/sagemaker-multi-node/) and 
+- [Using AWS SageMaker with minimal dependencies, part 2 - Fault-tolerant model training on spot instances](https://krasserm.github.io/2022/02/26/sagemaker-fault-tolerance/)
 
 and provides instructions for running the documented examples.
 
